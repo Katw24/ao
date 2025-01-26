@@ -1,5 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <title>Teste Arranjo de Figuras</title>
+    <imagetitle></imagetitle>
+  </head>
+  <body>
+    <style>
+      body { background-color: powderblue; }
+    </style>
+    <h1 class="title">Arraste a imagem na ordem correta</h1>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +30,13 @@
     <div class="box" style="left: 950px; top: 50px;" id="box3">
       <img src="https://via.placeholder.com/400x400" alt="Image 3" />
       <button class="rotate-button">⟳</button>
+    </div>
+    <div class="linkContainer">
+      <a class="link" href="./page2.html"> 
+      <img 
+        src="./outros/7604747.png"; 
+        width="1%"
+        alt="próximo"></a>
     </div>
   </div>
 
@@ -103,6 +120,8 @@
         document.addEventListener("mouseup", mouseUpHandler);
       });
     });
+//timer//
+    setTimeout(function () {window.location.href= "page2.html"
+  },60000);
   </script>  
-</body>
 </html>

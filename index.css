@@ -54,3 +54,13 @@ body {
     display: flex; /* Show the button when hovering over the box */
   }
   
+  .title {
+    font-size: 1.5rem;
+    text-align: center;
+    font-family: sans-serif
+    }
+    
+    .linkContainer {
+        padding: 50px;
+        text-align: right;
+    }
