@@ -1,0 +1,56 @@
+body {
+    background-color: powderblue;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+  }
+  
+  .container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+  }
+  
+  .box {
+    position: absolute;
+    border: 2px dashed #007bff;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Prevent any overflow */
+  }
+  
+  img {
+    width: 7cm; /* Set image width to 7cm */
+    height: auto; /* Maintain aspect ratio */
+    pointer-events: none; /* Prevent interaction with the image */
+    user-select: none;
+  }
+  
+  .rotate-button {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .rotate-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .box:hover .rotate-button {
+    display: flex; /* Show the button when hovering over the box */
+  }
+  

@@ -1,19 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draggable and Rotatable Images</title>
+  <!-- Link to the external CSS file -->
+  <link rel="stylesheet" href="index.css">
+</head>
 <body>
-  <div id = "clothes">
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDZT0qh99IVOiZ1NdoCsrP4_mSQzuAFRBVzw&s" id= "clothing">
-    <button onclick= "change()">Click here</button>
-    <button onclick = "change2()"> Click here</button>
-    <button onclick = "change3()"> Click here</button>
-</div>
+  <div class="container">
+    <div class="box" style="left: 50px; top: 50px;" id="box1">
+      <img src="./page1Images/cap1.png" alt="Image 1" />
+      <button class="rotate-button">⟳</button>
+    </div>
+    <div class="box" style="left: 500px; top: 50px;" id="box2">
+      <img src="https://via.placeholder.com/300x400" alt="Image 2" />
+      <button class="rotate-button">⟳</button>
+    </div>
+    <div class="box" style="left: 950px; top: 50px;" id="box3">
+      <img src="https://via.placeholder.com/400x400" alt="Image 3" />
+      <button class="rotate-button">⟳</button>
+    </div>
+  </div>
+
+  <script>
+    let drag = false;
+    let isRotating = false;
+    let offsetX = 0;
+    let offsetY = 0;
+    let activeBox = null;
+  
+    document.querySelectorAll(".box").forEach((box) => {
+      const img = box.querySelector("img");
+  
+      // Adjust the box size dynamically to match the image dimensions
+      img.onload = () => {
+        box.style.width = `${img.clientWidth}px`;
+        box.style.height = `${img.clientHeight}px`;
+      };
+  
+      const rotateButton = box.querySelector(".rotate-button");
+  
+      // Dragging logic
+      box.addEventListener("mousedown", (e) => {
+        if (e.target.classList.contains("rotate-button")) return; // Ignore rotate button
+  
+        drag = true;
+        activeBox = box;
+  
+        // Calculate the offset between the mouse pointer and the box's position
+        const boxRect = box.getBoundingClientRect();
+        offsetX = e.clientX - boxRect.left;
+        offsetY = e.clientY - boxRect.top;
+  
+        // Add event listeners for mousemove and mouseup
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+      });
+  
+      const onMouseMove = (e) => {
+        if (!drag || !activeBox) return;
+  
+        // Update the box's position to follow the mouse
+        activeBox.style.left = `${e.clientX - offsetX}px`;
+        activeBox.style.top = `${e.clientY - offsetY}px`;
+      };
+  
+      const onMouseUp = () => {
+        drag = false;
+        activeBox = null;
+  
+        // Remove event listeners to avoid memory leaks
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+      };
+  
+      // Rotation logic
+      rotateButton.addEventListener("mousedown", (e) => {
+        isRotating = true;
+  
+        const mouseMoveHandler = (e) => {
+          if (!isRotating) return;
+  
+          // Calculate angle based on mouse position relative to the box’s center
+          const boxCenterX = box.getBoundingClientRect().left + box.offsetWidth / 2;
+          const boxCenterY = box.getBoundingClientRect().top + box.offsetHeight / 2;
+          const deltaX = e.clientX - boxCenterX;
+          const deltaY = e.clientY - boxCenterY;
+          const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+  
+          // Update rotation angle and apply rotation
+          box.style.transform = `rotate(${angle}deg)`;
+        };
+  
+        const mouseUpHandler = () => {
+          isRotating = false;
+          document.removeEventListener("mousemove", mouseMoveHandler);
+          document.removeEventListener("mouseup", mouseUpHandler);
+        };
+  
+        document.addEventListener("mousemove", mouseMoveHandler);
+        document.addEventListener("mouseup", mouseUpHandler);
+      });
+    });
+  </script>  
 </body>
-<script>
-  function change(){
-  clothing.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_za-XgqiSjHKXHhafCQTFOOhNEKXrfE0e7Q&s"; 
-}
-function change2(){
-  clothing.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5eAUA&s"; 
-}
-function change3(){
-  clothing.src = "https://www.shutterstock.com/image-photo/calm-weather-on-sea-ocean-600nw-2212935531.jpg"; 
-}
-</script>
+</html>
