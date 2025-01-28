@@ -7,72 +7,145 @@
   <body>
     <h1 class="title">Arraste a imagem na ordem correta</h1>
     <div class="container">
-      <img
-        src="./page1Images/cap1.png"
-        alt="drag-and-drop image script"
-        title="drag-and-drop image script"
-        class="dragme"
-      />
-      <img
-        src="./page1Images/cap2.png"
-        alt="drag-and-drop image script"
-        title="drag-and-drop image script"
-        class="dragme"
-      />
-      <img
-        src="/page1Images/cap3.png"
-        alt="drag-and-drop image script"
-        title="drag-and-drop image script"
-        class="dragme"
-      />
+      <div class="image-container" style="top: 50px; left: 50px;">
+        <img
+          src="./page1Images/homi1.PNG"
+          alt="drag-and-drop image script"
+          class="dragme"
+        />
+        <div class="rotate-button">↻</div>
+      </div>
+      <div class="image-container" style="top: 200px; left: 150px;">
+        <img
+          src="./page1Images/homi2.PNG"
+          alt="drag-and-drop image script"
+          class="dragme"
+        />
+        <div class="rotate-button">↻</div>
+      </div>
+      <div class="image-container" style="top: 350px; left: 250px;">
+        <img
+          src="./page1Images/homi3.PNG"
+          alt="drag-and-drop image script"
+          class="dragme"
+        />
+        <div class="rotate-button">↻</div>
+      </div>
+      <div class="image-container" style="top: 350px; left: 250px;">
+        <img
+          src="./page1Images/homi4.PNG"
+          alt="drag-and-drop image script"
+          class="dragme"
+        />
+        <div class="rotate-button">↻</div>
+      </div>
+      <div class="image-container" style="top: 350px; left: 250px;">
+        <img
+          src="./page1Images/homi5.PNG"
+          alt="drag-and-drop image script"
+          class="dragme"
+        />
+        <div class="rotate-button">↻</div>
+      </div>
+      <div class="image-container" style="top: 350px; left: 250px;">
+        <img
+          src="./page1Images/homi6.PNG"
+          alt="drag-and-drop image script"
+          class="dragme"
+        />
+        <div class="rotate-button">↻</div>
+      </div>
     </div>
     <div class="linkContainer">
-      <a class="link" href="/index 2.html">Proximo</a>
+      <a class="link" href="./page2.html"> 
+      <img 
+        src="./outros/7604747.png"; 
+        width="5%"
+        alt="próximo"></a>
     </div>
   </body>
-  <script>
-    function startDrag(e) {
-      if (!e) {
-        var e = window.event;
-      }
-      if (e.preventDefault) e.preventDefault();
-      var targ = e.target ? e.target : e.srcElement;
 
-      if (targ.className != "dragme") {
-        return;
+    <script>
+      let drag = false;
+      let offsetX, offsetY, coordX, coordY;
+
+      function startDrag(e) {
+        if (!e) e = window.event;
+        if (e.preventDefault) e.preventDefault();
+        const targ = e.target.closest(".image-container");
+        if (!targ) return;
+
+        offsetX = e.clientX;
+        offsetY = e.clientY;
+
+        coordX = parseInt(targ.style.left) || 0;
+        coordY = parseInt(targ.style.top) || 0;
+
+        drag = targ;
+
+        document.onmousemove = dragDiv;
       }
-      offsetX = e.clientX;
-      offsetY = e.clientY;
-      if (!targ.style.left) {
-        targ.style.left = "0px";
+
+      function dragDiv(e) {
+        if (!drag) return;
+        if (!e) e = window.event;
+
+        const targ = drag;
+
+        targ.style.left = coordX + e.clientX - offsetX + "px";
+        targ.style.top = coordY + e.clientY - offsetY + "px";
       }
-      if (!targ.style.top) {
-        targ.style.top = "0px";
+
+      function stopDrag() {
+        drag = false;
       }
-      coordX = parseInt(targ.style.left);
-      coordY = parseInt(targ.style.top);
-      drag = true;
-      document.onmousemove = dragDiv;
-      return false;
-    }
-    function dragDiv(e) {
-      if (!drag) {
-        return;
+
+      function rotateImage(e) {
+        e.stopPropagation();
+        const targ = e.target.closest(".image-container").querySelector(".dragme");
+        const rect = targ.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const calculateAngle = (mouseX, mouseY) => {
+          const dx = mouseX - centerX;
+          const dy = mouseY - centerY;
+          return Math.atan2(dy, dx) * (180 / Math.PI);
+        };
+
+        let initialAngle = calculateAngle(e.clientX, e.clientY);
+        let currentRotation = parseFloat(targ.dataset.rotation || 0);
+
+        const rotate = (event) => {
+          const newAngle = calculateAngle(event.clientX, event.clientY);
+          const deltaAngle = newAngle - initialAngle;
+          targ.style.transform = `rotate(${currentRotation + deltaAngle}deg)`;
+        };
+
+        const stopRotate = () => {
+          currentRotation = parseFloat(targ.style.transform.replace(/[^0-9\-.,]/g, "").split(",")[0]) || 0;
+          targ.dataset.rotation = currentRotation;
+          document.removeEventListener("mousemove", rotate);
+          document.removeEventListener("mouseup", stopRotate);
+        };
+
+        document.addEventListener("mousemove", rotate);
+        document.addEventListener("mouseup", stopRotate);
       }
-      if (!e) {
-        var e = window.event;
-      }
-      var targ = e.target ? e.target : e.srcElement;
-      targ.style.left = coordX + e.clientX - offsetX + "px";
-      targ.style.top = coordY + e.clientY - offsetY + "px";
-      return false;
-    }
-    function stopDrag() {
-      drag = false;
-    }
-    window.onload = function () {
-      document.onmousedown = startDrag;
-      document.onmouseup = stopDrag;
-    };
-  </script>
+
+      window.onload = function () {
+        document.onmousedown = startDrag;
+        document.onmouseup = stopDrag;
+
+        const rotateButtons = document.querySelectorAll(".rotate-button");
+        rotateButtons.forEach((btn) => {
+          btn.addEventListener("mousedown", rotateImage);
+        });
+      };
+    
+    //timer//
+    setTimeout(function () {window.location.href= "page2.html"
+  },60000);
+    </script>
+  </body>
 </html>
