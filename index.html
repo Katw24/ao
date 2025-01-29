@@ -3,65 +3,50 @@
   <head>
     <link rel="stylesheet" type="text/css" href="index.css" />
     <title>Teste Arranjo de Figuras</title>
+    <style>
+      .image-container {
+        position: absolute;
+        border: 1px dashed red; /* Adds a visible border for positioning */
+        padding: 5px;
+      }
+      .dragme {
+        display: block;
+        max-width: 100%;
+      }
+    </style>
   </head>
   <body>
     <h1 class="title">Arraste a imagem na ordem correta</h1>
     <div class="container">
-      <div class="image-container" style="top: 50px; left: 50px;">
-        <img
-          src="./page1Images/homi1.PNG"
-          alt="drag-and-drop image script"
-          class="dragme"
-        />
+      <div class="image-container" style="top: 137px; left: 89px; width: 80px; height: 100px;">
+        <img src="./page1Images/homi1.PNG" alt="drag-and-drop image script" class="dragme"/>
         <div class="rotate-button">↻</div>
       </div>
-      <div class="image-container" style="top: 200px; left: 150px;">
-        <img
-          src="./page1Images/homi2.PNG"
-          alt="drag-and-drop image script"
-          class="dragme"
-        />
+      <div class="image-container" style="top: 135px; left: 247px; width: 110px; height: 120px;">
+        <img src="./page1Images/homi2.PNG" alt="drag-and-drop image script" class="dragme"/>
         <div class="rotate-button">↻</div>
       </div>
-      <div class="image-container" style="top: 350px; left: 250px;">
-        <img
-          src="./page1Images/homi3.PNG"
-          alt="drag-and-drop image script"
-          class="dragme"
-        />
+      <div class="image-container" style="top: 135px; left: 407px; width: 160px; height: 140px;">
+        <img src="./page1Images/homi3.PNG" alt="drag-and-drop image script" class="dragme"/>
         <div class="rotate-button">↻</div>
       </div>
-      <div class="image-container" style="top: 350px; left: 250px;">
-        <img
-          src="./page1Images/homi4.PNG"
-          alt="drag-and-drop image script"
-          class="dragme"
-        />
+      <div class="image-container" style="top: 135px; left: 628px; width: 112px; height: 160px;">
+        <img src="./page1Images/homi4.PNG" alt="drag-and-drop image script" class="dragme"/>
         <div class="rotate-button">↻</div>
       </div>
-      <div class="image-container" style="top: 350px; left: 250px;">
-        <img
-          src="./page1Images/homi5.PNG"
-          alt="drag-and-drop image script"
-          class="dragme"
-        />
+      <div class="image-container" style="top: 135px; left: 975px; width: 90px; height: 180px;">
+        <img src="./page1Images/homi5.PNG" alt="drag-and-drop image script" class="dragme"/>
         <div class="rotate-button">↻</div>
       </div>
-      <div class="image-container" style="top: 350px; left: 250px;">
-        <img
-          src="./page1Images/homi6.PNG"
-          alt="drag-and-drop image script"
-          class="dragme"
-        />
+      <div class="image-container" style="top: 135px; left: 829px; width: 80px; height: 200px;">
+        <img src="./page1Images/homi6.PNG" alt="drag-and-drop image script" class="dragme"/>
         <div class="rotate-button">↻</div>
       </div>
     </div>
     <div class="linkContainer">
       <a class="link" href="./page2.html"> 
-      <img 
-        src="./outros/7604747.png"; 
-        width="5%"
-        alt="próximo"></a>
+        <img src="./outros/7604747.png" width="5%" alt="próximo">
+      </a>
     </div>
   </body>
     <script>
@@ -124,9 +109,6 @@
           btn.addEventListener("mousedown", rotateImage);
         });
       };
-    //timer//
-    setTimeout(function () {window.location.href= "page2.html"
-  },60000);
     </script>
   </body>
 </html>
