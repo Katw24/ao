@@ -26,7 +26,8 @@ body {
   cursor: grab;
   transform-origin: center;
   transition: transform 0.2s ease;
-  width: 5cm;
+  width: 100%; /* This will make the image stretch to the container's width */
+  height: 100%;
 }
 .rotate-button {
   position: absolute;
