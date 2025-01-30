@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <title>Teste Arranjo de Figuras</title>
+    <style>
+      .image-container {
+        position: absolute;
+        border: none; /* Adds a visible border for positioning */
+        padding: 5px;
+      }
+      .dragme {
+        display: block;
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Arraste a imagem na ordem correta</h1>
+    <div class="container">
+      <div class="image-container" style="top: 137px; left: 89px; width: 80px; height: 100px;">
+        <img src="./page3Images/fante1.PNG" alt="drag-and-drop image script" class="dragme"/>
+        <div class="rotate-button">↻</div>
+      </div>
+      <div class="image-container" style="top: 135px; left: 247px; width: 105px; height: 120px;">
+        <img src="./page3Images/fante2.PNG" alt="drag-and-drop image script" class="dragme"/>
+        <div class="rotate-button">↻</div>
+      </div>
+      <div class="image-container" style="top: 135px; left: 407px; width: 160px; height: 140px;">
+        <img src="./page3mages/fante3.PNG" alt="drag-and-drop image script" class="dragme"/>
+        <div class="rotate-button">↻</div>
+      </div>
+      <div class="image-container" style="top: 135px; left: 628px; width: 112px; height: 160px;">
+        <img src="./page3Images/fante4.PNG" alt="drag-and-drop image script" class="dragme"/>
+        <div class="rotate-button">↻</div>
+      </div>
+      <div class="image-container" style="top: 135px; left: 975px; width: 90px; height: 180px;">
+        <img src="./page3Images/fante5.PNG" alt="drag-and-drop image script" class="dragme"/>
+        <div class="rotate-button">↻</div>
+      </div>
+      <div class="image-container" style="top: 135px; left: 829px; width: 80px; height: 200px;">
+        <img src="./page3Images/fante6.PNG" alt="drag-and-drop image script" class="dragme"/>
+        <div class="rotate-button">↻</div>
+      </div>
+    </div>
+    <div class="linkContainer">
+      <a class="link" href="./page4.html"> 
+        <img src="./outros/7604747.png" width="5%" alt="próximo">
+      </a>
+    </div>
+  </body>
+    <script>
+      let drag = false;
+      let offsetX, offsetY, coordX, coordY;
+      function startDrag(e) {
+        if (!e) e = window.event;
+        if (e.preventDefault) e.preventDefault();
+        const targ = e.target.closest(".image-container");
+        if (!targ) return;
+        offsetX = e.clientX;
+        offsetY = e.clientY;
+        coordX = parseInt(targ.style.left) || 0;
+        coordY = parseInt(targ.style.top) || 0;
+        drag = targ;
+        document.onmousemove = dragDiv;
+      }
+      function dragDiv(e) {
+        if (!drag) return;
+        if (!e) e = window.event;
+        const targ = drag;
+        targ.style.left = coordX + e.clientX - offsetX + "px";
+        targ.style.top = coordY + e.clientY - offsetY + "px";
+      }
+      function stopDrag() {
+        drag = false;
+      }
+      function rotateImage(e) {
+        e.stopPropagation();
+        const targ = e.target.closest(".image-container").querySelector(".dragme");
+        const rect = targ.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const calculateAngle = (mouseX, mouseY) => {
+          const dx = mouseX - centerX;
+          const dy = mouseY - centerY;
+          return Math.atan2(dy, dx) * (180 / Math.PI);
+        };
+        let initialAngle = calculateAngle(e.clientX, e.clientY);
+        let currentRotation = parseFloat(targ.dataset.rotation || 0);
+        const rotate = (event) => {
+          const newAngle = calculateAngle(event.clientX, event.clientY);
+          const deltaAngle = newAngle - initialAngle;
+          targ.style.transform = `rotate(${currentRotation + deltaAngle}deg)`;
+        };
+        const stopRotate = () => {
+          currentRotation = parseFloat(targ.style.transform.replace(/[^0-9\-.,]/g, "").split(",")[0]) || 0;
+          targ.dataset.rotation = currentRotation;
+          document.removeEventListener("mousemove", rotate);
+          document.removeEventListener("mouseup", stopRotate);
+        };
+        document.addEventListener("mousemove", rotate);
+        document.addEventListener("mouseup", stopRotate);
+      }
+      window.onload = function () {
+        document.onmousedown = startDrag;
+        document.onmouseup = stopDrag;
+        const rotateButtons = document.querySelectorAll(".rotate-button");
+        rotateButtons.forEach((btn) => {
+          btn.addEventListener("mousedown", rotateImage);
+        });
+      };
+    </script>
+  </body>
+</html>
