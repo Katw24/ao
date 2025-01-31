@@ -52,7 +52,6 @@ body {
   display: flex; /* Show button on hover */
 }
 .linkContainer {
-    padding: 50px;
     text-align: right-center;
 }
 .linkinicio {
