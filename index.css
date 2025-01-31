@@ -54,8 +54,6 @@ body {
 .linkContainer {
   right: 0; /* Position it at the far left */
   top: 50%; /* Center vertically */
-  transform: translateY(-50%); /* Adjust for perfect centering */
-  z-index: 10;
 }
 .linkinicio {
   display: flex; /* Use flexbox for centering */
