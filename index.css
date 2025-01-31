@@ -53,7 +53,7 @@ body {
 }
 .linkContainer {
   positioning: absulute;
-  right: 0;
+  right: 100;
 }
 .linkinicio {
   display: flex; /* Use flexbox for centering */
