@@ -52,8 +52,10 @@ body {
   display: flex; /* Show button on hover */
 }
 .linkContainer {
-  positioning: absulute;
-  float: right;
+ position: absolute;
+  top: 50%; /* Vertically centered */
+  right: 0; /* Aligned to the right */
+  transform: translateY(-50%); /* Adjusts for exact center */
 }
 .linkinicio {
   display: flex; /* Use flexbox for centering */
