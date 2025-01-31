@@ -53,10 +53,7 @@ body {
 }
 .linkContainer {
     padding: 50px;
-    text-align: right;
-    top: 112px; 
-    left: 110px;  
-    height: 100px;
+    text-align: right-center;
 }
 .linkinicio {
   display: flex; /* Use flexbox for centering */
