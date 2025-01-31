@@ -52,15 +52,9 @@ body {
   display: flex; /* Show button on hover */
 }
 .linkContainer {
-  position: fixed; /* Fix it to the screen */
-  right: 20px; /* Position 20px from the right edge */
-  top: 50%; /* Center it vertically */
-  transform: translateY(-50%); /* Adjust to truly center it */
-  padding: 50px;
-  text-align: center; /* Center text inside the container */
-  background-color: rgba(255, 255, 255, 0.8); /* Optional: add background for contrast */
-  border-radius: 8px; /* Optional: add rounded corners */
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2); /* Optional: add shadow for better visibility */
-  z-index: 999; /* Ensure it stays on top */
+  height: auto; /* Maintain aspect ratio */
+  display: block;
+  justify-content: center;
+  align-items: right;
 }
 
