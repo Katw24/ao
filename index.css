@@ -56,6 +56,7 @@ body {
   top: 50%; /* Vertically centered */
   right: 0; /* Aligned to the right */
   transform: translateY(-50%); /* Adjusts for exact center */
+  overflow: visible;
 }
 .linkinicio {
   display: flex; /* Use flexbox for centering */
