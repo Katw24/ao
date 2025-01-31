@@ -18,7 +18,7 @@ body {
 }
 .image-container {
   position: absolute;
-  cursor: grab;
+  float: right
 }
 .dragme {
   position: relative;
