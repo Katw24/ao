@@ -61,7 +61,6 @@ body {
   justify-content: center;
   align-items: center;
 }
-}
 .linkinicio {
   display: flex; /* Use flexbox for centering */
   justify-content: center; /* Center horizontally */
