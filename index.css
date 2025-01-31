@@ -53,7 +53,7 @@ body {
 }
 .linkContainer {
   position: fixed;
-  right: 20px; /* Adjust the right position */
+  right: 100px; /* Adjust the right position */
   top: 50%; /* Position it in the center vertically */
   transform: translateY(-50%); /* Adjust for perfect centering */
   z-index: 10;
