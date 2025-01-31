@@ -52,8 +52,10 @@ body {
   display: flex; /* Show button on hover */
 }
 .linkContainer {
-  right: 0; /* Position it at the far left */
-  top: 50%; /* Center vertically */
+  top: 190px; 
+  left: 1190px; 
+  width: 90px; 
+  height: 180px;"
 }
 .linkinicio {
   display: flex; /* Use flexbox for centering */
