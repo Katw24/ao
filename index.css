@@ -52,7 +52,7 @@ body {
   display: flex; /* Show button on hover */
 }
 .linkContainer {
-  right: 0; /* Position it at the far left */
+  right: 50; /* Position it at the far left */
   top: 50%; /* Center vertically */
   transform: translateY(-50%); /* Adjust for perfect centering */
   z-index: 10;
