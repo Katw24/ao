@@ -52,7 +52,8 @@ body {
   display: flex; /* Show button on hover */
 }
 .linkContainer {
-    text-align: right-center;
+  positioning: absulute;
+  right: 0;
 }
 .linkinicio {
   display: flex; /* Use flexbox for centering */
