@@ -57,4 +57,13 @@ body {
   transform: translateY(-50%); /* Adjust for perfect centering */
   z-index: 10;
 }
+.linkinicio {
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+.linkinicio img {
+  height: auto; /* Maintain aspect ratio */
+  display: block;
+}
 
