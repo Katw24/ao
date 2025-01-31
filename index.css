@@ -52,10 +52,15 @@ body {
   display: flex; /* Show button on hover */
 }
 .linkContainer {
-  top: 190px; 
-  left: 1190px; 
-  width: 90px; 
-  height: 180px;"
+  position: absolute;
+  top: 20px;  /* Adjust this value to position it where you want */
+  left: 20px; /* Adjust this value to position it where you want */
+  width: 90px;
+  height: 180px;
+  display: flex; /* Flexbox for centering content */
+  justify-content: center;
+  align-items: center;
+}
 }
 .linkinicio {
   display: flex; /* Use flexbox for centering */
