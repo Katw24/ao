@@ -52,9 +52,10 @@ body {
   display: flex; /* Show button on hover */
 }
 .linkContainer {
-  height: auto; /* Maintain aspect ratio */
-  display: block;
-  justify-content: center;
-  align-items: right;
+  position: fixed;
+  right: 20px; /* Adjust the right position */
+  top: 50%; /* Position it in the center vertically */
+  transform: translateY(-50%); /* Adjust for perfect centering */
+  z-index: 10;
 }
 
