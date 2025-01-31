@@ -52,11 +52,11 @@ body {
   display: flex; /* Show button on hover */
 }
 .linkContainer {
- position: absolute;
-  top: 50%; /* Vertically centered */
-  right: 0; /* Aligned to the right */
-  transform: translateY(-50%); /* Adjusts for exact center */
-  overflow: visible;
+    padding: 50px;
+    text-align: right;
+    top: 112px; 
+    left: 110px;  
+    height: 100px;
 }
 .linkinicio {
   display: flex; /* Use flexbox for centering */
