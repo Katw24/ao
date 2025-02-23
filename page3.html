@@ -11,10 +11,12 @@
         position: absolute;
         border: none; /* Adds a visible border for positioning */
         padding: 5px;
+        /* Allow rotated images to display fully */
+        overflow: visible;
       }
+      /* We'll let JavaScript set the image width so remove max-width */
       .dragme {
         display: block;
-        max-width: 100%;
       }
     </style>
   </head>
@@ -41,7 +43,7 @@
         <img src="./page3Images/fante5.png" alt="drag-and-drop image script" class="dragme"/>
         <div class="rotate-button">↻</div>
       </div>
-      <div class="image-container" style="top: 48px; left: 198px; width: 180px";>
+      <div class="image-container" style="top: 48px; left: 198px; width: 179px;">
         <img src="./page3Images/fante6.png" alt="drag-and-drop image script" class="dragme"/>
         <div class="rotate-button">↻</div>
       </div>
@@ -52,66 +54,169 @@
       </a>
     </div>
   </body>
-    <script>
-      let drag = false;
-      let offsetX, offsetY, coordX, coordY;
-      function startDrag(e) {
-        if (!e) e = window.event;
-        if (e.preventDefault) e.preventDefault();
-        const targ = e.target.closest(".image-container");
-        if (!targ) return;
-        offsetX = e.clientX;
-        offsetY = e.clientY;
-        coordX = parseInt(targ.style.left) || 0;
-        coordY = parseInt(targ.style.top) || 0;
-        drag = targ;
-        document.onmousemove = dragDiv;
+  <script>
+    // Crops the image to its non-transparent (colored) bounds and adjusts its display
+    // so that the colored area appears with the same size and position as if the full image were scaled.
+    function cropImage(img) {
+      const natWidth = img.naturalWidth;
+      const natHeight = img.naturalHeight;
+      
+      // Draw the full image on a temporary canvas.
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = natWidth;
+      tempCanvas.height = natHeight;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.drawImage(img, 0, 0);
+      const imageData = tempCtx.getImageData(0, 0, natWidth, natHeight);
+      const data = imageData.data;
+      
+      let top = null, left = null, right = null, bottom = null;
+      for (let y = 0; y < natHeight; y++) {
+        for (let x = 0; x < natWidth; x++) {
+          const index = (y * natWidth + x) * 4;
+          if (data[index + 3] > 0) { // non-transparent pixel found
+            if (top === null) top = y;
+            if (left === null || x < left) left = x;
+            if (right === null || x > right) right = x;
+            bottom = y;
+          }
+        }
       }
-      function dragDiv(e) {
-        if (!drag) return;
-        if (!e) e = window.event;
-        const targ = drag;
-        targ.style.left = coordX + e.clientX - offsetX + "px";
-        targ.style.top = coordY + e.clientY - offsetY + "px";
+      // If the image is completely transparent, do nothing.
+      if (top === null) return;
+      
+      const cropWidth = right - left + 1;
+      const cropHeight = bottom - top + 1;
+      
+      // Determine the scale factor based on the container's set width.
+      const container = img.closest(".image-container");
+      const containerWidth = parseFloat(container.style.width);
+      const scale = containerWidth / natWidth;
+      
+      // Optionally adjust container's height based on full image scaling.
+      const containerHeight = natHeight * scale;
+      container.style.height = containerHeight + "px";
+      
+      // Determine where the colored area lies in the displayed (scaled) image.
+      const leftDisplay = left * scale;
+      const topDisplay = top * scale;
+      const coloredWidthDisplay = cropWidth * scale;
+      
+      // Create a new canvas for the cropped (colored) portion.
+      const croppedCanvas = document.createElement('canvas');
+      croppedCanvas.width = cropWidth;
+      croppedCanvas.height = cropHeight;
+      const croppedCtx = croppedCanvas.getContext('2d');
+      croppedCtx.drawImage(tempCanvas, left, top, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+      
+      // Replace the image source with the cropped version.
+      img.src = croppedCanvas.toDataURL();
+      
+      // Adjust the image's CSS so that the colored area appears in its original size and position.
+      img.style.width = coloredWidthDisplay + "px";
+      img.style.height = "auto";
+      img.style.position = "relative";
+      img.style.left = -leftDisplay + "px";
+      img.style.top = -topDisplay + "px";
+    }
+    
+    // Checks whether the clicked pixel in the image is transparent.
+    function isPixelTransparent(img, clientX, clientY) {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      
+      const rect = img.getBoundingClientRect();
+      const x = (clientX - rect.left) * (img.naturalWidth / rect.width);
+      const y = (clientY - rect.top) * (img.naturalHeight / rect.height);
+      
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      return pixel[3] === 0;
+    }
+    
+    let drag = false;
+    let offsetX, offsetY, coordX, coordY;
+    
+    function startDrag(e) {
+      if (!e) e = window.event;
+      if (e.preventDefault) e.preventDefault();
+      // Find the container of the clicked image.
+      const container = e.target.closest(".image-container");
+      if (!container) return;
+      
+      const img = container.querySelector(".dragme");
+      // Don't start dragging if the clicked pixel is transparent.
+      if (img && isPixelTransparent(img, e.clientX, e.clientY)) {
+        return;
       }
-      function stopDrag() {
-        drag = false;
-      }
-      function rotateImage(e) {
-        e.stopPropagation();
-        const targ = e.target.closest(".image-container").querySelector(".dragme");
-        const rect = targ.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const calculateAngle = (mouseX, mouseY) => {
-          const dx = mouseX - centerX;
-          const dy = mouseY - centerY;
-          return Math.atan2(dy, dx) * (180 / Math.PI);
-        };
-        let initialAngle = calculateAngle(e.clientX, e.clientY);
-        let currentRotation = parseFloat(targ.dataset.rotation || 0);
-        const rotate = (event) => {
-          const newAngle = calculateAngle(event.clientX, event.clientY);
-          const deltaAngle = newAngle - initialAngle;
-          targ.style.transform = `rotate(${currentRotation + deltaAngle}deg)`;
-        };
-        const stopRotate = () => {
-          currentRotation = parseFloat(targ.style.transform.replace(/[^0-9\-.,]/g, "").split(",")[0]) || 0;
-          targ.dataset.rotation = currentRotation;
-          document.removeEventListener("mousemove", rotate);
-          document.removeEventListener("mouseup", stopRotate);
-        };
-        document.addEventListener("mousemove", rotate);
-        document.addEventListener("mouseup", stopRotate);
-      }
-      window.onload = function () {
-        document.onmousedown = startDrag;
-        document.onmouseup = stopDrag;
-        const rotateButtons = document.querySelectorAll(".rotate-button");
-        rotateButtons.forEach((btn) => {
-          btn.addEventListener("mousedown", rotateImage);
-        });
+      
+      offsetX = e.clientX;
+      offsetY = e.clientY;
+      coordX = parseInt(container.style.left) || 0;
+      coordY = parseInt(container.style.top) || 0;
+      drag = container;
+      document.onmousemove = dragDiv;
+    }
+    
+    function dragDiv(e) {
+      if (!drag) return;
+      if (!e) e = window.event;
+      drag.style.left = coordX + e.clientX - offsetX + "px";
+      drag.style.top = coordY + e.clientY - offsetY + "px";
+    }
+    
+    function stopDrag() {
+      drag = false;
+    }
+    
+    function rotateImage(e) {
+      e.stopPropagation();
+      const targ = e.target.closest(".image-container").querySelector(".dragme");
+      const rect = targ.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const calculateAngle = (mouseX, mouseY) => {
+        const dx = mouseX - centerX;
+        const dy = mouseY - centerY;
+        return Math.atan2(dy, dx) * (180 / Math.PI);
       };
-    </script>
-  </body>
+      let initialAngle = calculateAngle(e.clientX, e.clientY);
+      let currentRotation = parseFloat(targ.dataset.rotation || 0);
+      const rotate = (event) => {
+        const newAngle = calculateAngle(event.clientX, event.clientY);
+        const deltaAngle = newAngle - initialAngle;
+        targ.style.transform = `rotate(${currentRotation + deltaAngle}deg)`;
+      };
+      const stopRotate = () => {
+        currentRotation = parseFloat(targ.style.transform.replace(/[^0-9\-.,]/g, "").split(",")[0]) || 0;
+        targ.dataset.rotation = currentRotation;
+        document.removeEventListener("mousemove", rotate);
+        document.removeEventListener("mouseup", stopRotate);
+      };
+      document.addEventListener("mousemove", rotate);
+      document.addEventListener("mouseup", stopRotate);
+    }
+    
+    window.onload = function () {
+      document.onmousedown = startDrag;
+      document.onmouseup = stopDrag;
+      
+      const rotateButtons = document.querySelectorAll(".rotate-button");
+      rotateButtons.forEach((btn) => {
+        btn.addEventListener("mousedown", rotateImage);
+      });
+      
+      // For each image, crop the transparent margins and adjust its display.
+      const images = document.querySelectorAll('.dragme');
+      images.forEach((img) => {
+        if (img.complete) {
+          cropImage(img);
+        } else {
+          img.onload = () => cropImage(img);
+        }
+      });
+    };
+  </script>  
 </html>
