@@ -22,51 +22,55 @@
     <h1 class="title">Monte o quebra-cabeça</h1>
     <div class="container">
       <div class="image-container" style="top: 434px; left: 660px; width: 140px;">
-        <img src="./page5Images/borb1.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page5Images/borb1.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 267px; left: 790px; width: 162px;">
-        <img src="./page5Images/borb2.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page5Images/borb2.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 254px; left: 453px; width: 250px;">
-        <img src="./page5Images/borb3.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page5Images/borb3.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 115px; left: 752px; width: 250px;">
-        <img src="./page5Images/borb4.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page5Images/borb4.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 178px; left: 530px; width: 140px;">
-        <img src="./page5Images/borb5.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page5Images/borb5.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 40px; left: 780px; width: 150px;">
-        <img src="./page5Images/borb6.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page5Images/borb6.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 15px; left: 483px; width: 198px;">
-        <img src="./page5Images/borb7.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page5Images/borb7.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
     </div>
   </body>
+
   <script>
-    // This function crops an image to its non-transparent bounding box.
+    let drag = false;
+    let offsetX, offsetY, coordX, coordY;
+  
     function cropImage(img) {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const natWidth = img.naturalWidth;
+      const natHeight = img.naturalHeight;
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = natWidth;
+      tempCanvas.height = natHeight;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.drawImage(img, 0, 0);
+      const imageData = tempCtx.getImageData(0, 0, natWidth, natHeight);
       const data = imageData.data;
-      
       let top = null, left = null, right = null, bottom = null;
-      for (let y = 0; y < canvas.height; y++) {
-        for (let x = 0; x < canvas.width; x++) {
-          const index = (y * canvas.width + x) * 4;
-          if (data[index + 3] > 0) { // pixel is not transparent
+      for (let y = 0; y < natHeight; y++) {
+        for (let x = 0; x < natWidth; x++) {
+          const index = (y * natWidth + x) * 4;
+          if (data[index + 3] > 0) {
             if (top === null) top = y;
             if (left === null || x < left) left = x;
             if (right === null || x > right) right = x;
@@ -74,121 +78,105 @@
           }
         }
       }
-      // If the image is fully transparent, leave it as is.
       if (top === null) return;
-      
-      const width = right - left + 1;
-      const height = bottom - top + 1;
-      
+      const cropWidth = right - left + 1;
+      const cropHeight = bottom - top + 1;
+      const container = img.closest('.image-container');
+      const containerWidth = parseFloat(container.style.width);
+      const scale = containerWidth / natWidth;
+      const containerHeight = natHeight * scale;
+      container.style.height = containerHeight + "px";
+      const leftDisplay = left * scale;
+      const topDisplay = top * scale;
+      const coloredWidthDisplay = cropWidth * scale;
       const croppedCanvas = document.createElement('canvas');
-      croppedCanvas.width = width;
-      croppedCanvas.height = height;
+      croppedCanvas.width = cropWidth;
+      croppedCanvas.height = cropHeight;
       const croppedCtx = croppedCanvas.getContext('2d');
-      croppedCtx.drawImage(canvas, left, top, width, height, 0, 0, width, height);
-      
-      // Replace the image source with the cropped version.
+      croppedCtx.drawImage(tempCanvas, left, top, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
       img.src = croppedCanvas.toDataURL();
+      img.style.width = coloredWidthDisplay + "px";
+      img.style.height = "auto";
+      img.style.position = "relative";
+      img.style.left = -leftDisplay + "px";
+      img.style.top = -topDisplay + "px";
     }
-    
-    // Function to check if a clicked pixel in the image is transparent.
-    function isPixelTransparent(img, clientX, clientY) {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d');
+
+    const hiddenCanvas = document.createElement('canvas');
+    const ctx = hiddenCanvas.getContext('2d');
+    function isPixelTransparent(img, x, y) {
+      hiddenCanvas.width = img.naturalWidth;
+      hiddenCanvas.height = img.naturalHeight;
+      ctx.clearRect(0, 0, hiddenCanvas.width, hiddenCanvas.height);
       ctx.drawImage(img, 0, 0);
-      
-      const rect = img.getBoundingClientRect();
-      const x = (clientX - rect.left) * (img.naturalWidth / rect.width);
-      const y = (clientY - rect.top) * (img.naturalHeight / rect.height);
-      
-      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      const scaledX = Math.floor((x / img.clientWidth) * img.naturalWidth);
+      const scaledY = Math.floor((y / img.clientHeight) * img.naturalHeight);
+      const pixel = ctx.getImageData(scaledX, scaledY, 1, 1).data;
       return pixel[3] === 0;
     }
-    
-    let drag = false;
-    let offsetX, offsetY, coordX, coordY;
-    
+  
     function startDrag(e) {
       if (!e) e = window.event;
       if (e.preventDefault) e.preventDefault();
-      
-      // Find the container that was clicked.
-      const container = e.target.closest(".image-container");
-      if (!container) return;
-      
-      // Get the image inside the container.
-      const img = container.querySelector(".dragme");
-      // If the clicked pixel of the image is transparent, do not start dragging.
-      if (img && isPixelTransparent(img, e.clientX, e.clientY)) {
-        return;
-      }
-      
+      if (e.target.closest('.rotate-button')) return;
+      const targ = e.target.closest(".image-container");
+      if (!targ) return;
       offsetX = e.clientX;
       offsetY = e.clientY;
-      coordX = parseInt(container.style.left) || 0;
-      coordY = parseInt(container.style.top) || 0;
-      drag = container;
-      document.onmousemove = dragDiv;
+      coordX = parseInt(targ.style.left) || 0;
+      coordY = parseInt(targ.style.top) || 0;
+      drag = targ;
+      document.addEventListener('mousemove', dragDiv);
     }
-    
+  
     function dragDiv(e) {
       if (!drag) return;
-      if (!e) e = window.event;
       drag.style.left = coordX + e.clientX - offsetX + "px";
       drag.style.top = coordY + e.clientY - offsetY + "px";
     }
-    
+  
     function stopDrag() {
       drag = false;
+      document.removeEventListener('mousemove', dragDiv);
     }
-    
+  
     function rotateImage(e) {
       e.stopPropagation();
       const targ = e.target.closest(".image-container").querySelector(".dragme");
-      const rect = targ.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const calculateAngle = (mouseX, mouseY) => {
-        const dx = mouseX - centerX;
-        const dy = mouseY - centerY;
-        return Math.atan2(dy, dx) * (180 / Math.PI);
-      };
-      let initialAngle = calculateAngle(e.clientX, e.clientY);
       let currentRotation = parseFloat(targ.dataset.rotation || 0);
-      const rotate = (event) => {
-        const newAngle = calculateAngle(event.clientX, event.clientY);
-        const deltaAngle = newAngle - initialAngle;
-        targ.style.transform = `rotate(${currentRotation + deltaAngle}deg)`;
-      };
-      const stopRotate = () => {
-        currentRotation = parseFloat(targ.style.transform.replace(/[^0-9\-.,]/g, "").split(",")[0]) || 0;
-        targ.dataset.rotation = currentRotation;
-        document.removeEventListener("mousemove", rotate);
-        document.removeEventListener("mouseup", stopRotate);
-      };
-      document.addEventListener("mousemove", rotate);
-      document.addEventListener("mouseup", stopRotate);
+      const rotateStep = e.shiftKey ? -30 : 30;
+      currentRotation += rotateStep;
+      targ.dataset.rotation = currentRotation;
+      targ.style.transform = `rotate(${currentRotation}deg)`;
     }
-    
+  
     window.onload = function () {
-      document.onmousedown = startDrag;
-      document.onmouseup = stopDrag;
-      
-      const rotateButtons = document.querySelectorAll(".rotate-button");
-      rotateButtons.forEach((btn) => {
-        btn.addEventListener("mousedown", rotateImage);
+      document.querySelectorAll('.image-container').forEach((container) => {
+        container.addEventListener('mousedown', startDrag);
       });
-      
-      // Crop each image to remove its transparent areas.
-      const images = document.querySelectorAll('.dragme');
-      images.forEach((img) => {
+      document.addEventListener('mouseup', stopDrag);
+  
+      document.querySelectorAll(".rotate-button").forEach((btn) => {
+        btn.addEventListener("click", rotateImage);
+      });
+  
+      document.querySelectorAll('.dragme').forEach((img) => {
+        // Apply initial rotation
+        const initialRotation = parseFloat(img.dataset.rotation || 0);
+        img.style.transform = `rotate(${initialRotation}deg)`;
+        
         if (img.complete) {
           cropImage(img);
         } else {
-          img.onload = () => cropImage(img);
+          img.onload = () => {
+            cropImage(img);
+            // Reapply rotation after cropping in case it was lost
+            const rotation = parseFloat(img.dataset.rotation || 0);
+            img.style.transform = `rotate(${rotation}deg)`;
+          };
         }
       });
     };
-  </script>
+  </script>  
+</body>
 </html>

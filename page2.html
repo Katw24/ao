@@ -9,11 +9,11 @@
       }
       .image-container {
         position: absolute;
-        border: none; /* Adds a visible border for positioning */
+        border: none;
         padding: 5px;
-        overflow: visible; /* Allow rotated images to display fully */
+        overflow: visible; /* Allow rotated images to be fully visible */
       }
-      /* Let JavaScript adjust the image’s width; remove max-width */
+      /* We'll let JavaScript set the image’s width and positioning */
       .dragme {
         display: block;
       }
@@ -23,31 +23,31 @@
     <h1 class="title">Monte o quebra-cabeça</h1>
     <div class="container">
       <div class="image-container" style="top: 146px; left: 627px; width: 275px;">
-        <img src="./page2Images/cab1.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page2Images/cab1.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 8px; left: 923px; width: 83px;">
-        <img src="./page2Images/cab2.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page2Images/cab2.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 8px; left: 849px; width: 70px;">
-        <img src="./page2Images/cab3.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page2Images/cab3.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 27px; left: 756px; width: 96px;">
-        <img src="./page2Images/cab4.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page2Images/cab4.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 44px; left: 684px; width: 65px;">
-        <img src="./page2Images/cab5.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page2Images/cab5.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
       <div class="image-container" style="top: 24px; left: 593px; width: 81px;">
-        <img src="./page2Images/cab6.png" alt="drag-and-drop image script" class="dragme"/>
+        <img src="./page2Images/cab6.png" alt="drag-and-drop image script" class="dragme" data-rotation="43"/>
         <div class="rotate-button">↻</div>
       </div>
-      <div class="image-container" style="top: 35px; left: 492px; width: 62px; rotate:90deg">
-        <img src="./page2Images/cab7.png" alt="drag-and-drop image script" class="dragme"/>
+      <div class="image-container" style="top: 35px; left: 492px; width: 62px;">
+        <img src="./page2Images/cab7.png" alt="drag-and-drop image script" class="dragme" data-rotation="0"/>
         <div class="rotate-button">↻</div>
       </div>
     </div>
@@ -56,171 +56,132 @@
         <img src="./outros/7604747.png" width="11%" alt="próximo">
       </a>
     </div>
-  </body>
-  <script>
-    // Crop the image to its non-transparent (colored) bounds and adjust its display so that
-    // the colored area appears exactly as if the full image were scaled.
-    function cropImage(img) {
-      const natWidth = img.naturalWidth;
-      const natHeight = img.naturalHeight;
-      
-      // Draw the full image onto a temporary canvas.
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = natWidth;
-      tempCanvas.height = natHeight;
-      const tempCtx = tempCanvas.getContext('2d');
-      tempCtx.drawImage(img, 0, 0);
-      const imageData = tempCtx.getImageData(0, 0, natWidth, natHeight);
-      const data = imageData.data;
-      
-      let top = null, left = null, right = null, bottom = null;
-      for (let y = 0; y < natHeight; y++) {
-        for (let x = 0; x < natWidth; x++) {
-          const index = (y * natWidth + x) * 4;
-          if (data[index + 3] > 0) { // if pixel is not transparent
-            if (top === null) top = y;
-            if (left === null || x < left) left = x;
-            if (right === null || x > right) right = x;
-            bottom = y;
+
+    <script>
+      let drag = false;
+      let offsetX, offsetY, coordX, coordY;
+    
+      function cropImage(img) {
+        const natWidth = img.naturalWidth;
+        const natHeight = img.naturalHeight;
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = natWidth;
+        tempCanvas.height = natHeight;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(img, 0, 0);
+        const imageData = tempCtx.getImageData(0, 0, natWidth, natHeight);
+        const data = imageData.data;
+        let top = null, left = null, right = null, bottom = null;
+        for (let y = 0; y < natHeight; y++) {
+          for (let x = 0; x < natWidth; x++) {
+            const index = (y * natWidth + x) * 4;
+            if (data[index + 3] > 0) {
+              if (top === null) top = y;
+              if (left === null || x < left) left = x;
+              if (right === null || x > right) right = x;
+              bottom = y;
+            }
           }
         }
+        if (top === null) return;
+        const cropWidth = right - left + 1;
+        const cropHeight = bottom - top + 1;
+        const container = img.closest('.image-container');
+        const containerWidth = parseFloat(container.style.width);
+        const scale = containerWidth / natWidth;
+        const containerHeight = natHeight * scale;
+        container.style.height = containerHeight + "px";
+        const leftDisplay = left * scale;
+        const topDisplay = top * scale;
+        const coloredWidthDisplay = cropWidth * scale;
+        const croppedCanvas = document.createElement('canvas');
+        croppedCanvas.width = cropWidth;
+        croppedCanvas.height = cropHeight;
+        const croppedCtx = croppedCanvas.getContext('2d');
+        croppedCtx.drawImage(tempCanvas, left, top, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+        img.src = croppedCanvas.toDataURL();
+        img.style.width = coloredWidthDisplay + "px";
+        img.style.height = "auto";
+        img.style.position = "relative";
+        img.style.left = -leftDisplay + "px";
+        img.style.top = -topDisplay + "px";
       }
-      
-      // If the image is completely transparent, do nothing.
-      if (top === null) return;
-      
-      const cropWidth = right - left + 1;
-      const cropHeight = bottom - top + 1;
-      
-      // Determine the scaling factor from the container's inline width.
-      const container = img.closest('.image-container');
-      const containerWidth = parseFloat(container.style.width);
-      const scale = containerWidth / natWidth;
-      
-      // Optionally, adjust the container's height to match the full image's displayed height.
-      const containerHeight = natHeight * scale;
-      container.style.height = containerHeight + "px";
-      
-      // Calculate where the colored area would appear in the displayed (scaled) image.
-      const leftDisplay = left * scale;
-      const topDisplay = top * scale;
-      const coloredWidthDisplay = cropWidth * scale;
-      
-      // Create a canvas for the cropped colored portion.
-      const croppedCanvas = document.createElement('canvas');
-      croppedCanvas.width = cropWidth;
-      croppedCanvas.height = cropHeight;
-      const croppedCtx = croppedCanvas.getContext('2d');
-      croppedCtx.drawImage(tempCanvas, left, top, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
-      
-      // Replace the image source with the cropped version.
-      img.src = croppedCanvas.toDataURL();
-      
-      // Adjust the image's CSS so that the colored area appears at the same size and position
-      // as if the full image were scaled to the container.
-      img.style.width = coloredWidthDisplay + "px";
-      img.style.height = "auto";
-      img.style.position = "relative";
-      img.style.left = -leftDisplay + "px";
-      img.style.top = -topDisplay + "px";
-    }
-    
-    // Check if the clicked pixel in the image is transparent.
-    function isPixelTransparent(img, clientX, clientY) {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      
-      const rect = img.getBoundingClientRect();
-      const x = (clientX - rect.left) * (img.naturalWidth / rect.width);
-      const y = (clientY - rect.top) * (img.naturalHeight / rect.height);
-      
-      const pixel = ctx.getImageData(x, y, 1, 1).data;
-      return pixel[3] === 0;
-    }
-    
-    let drag = false;
-    let offsetX, offsetY, coordX, coordY;
-    
-    function startDrag(e) {
-      if (!e) e = window.event;
-      if (e.preventDefault) e.preventDefault();
-      const container = e.target.closest(".image-container");
-      if (!container) return;
-      
-      const img = container.querySelector(".dragme");
-      // Do not start dragging if the clicked pixel is transparent.
-      if (img && isPixelTransparent(img, e.clientX, e.clientY)) {
-        return;
+
+      const hiddenCanvas = document.createElement('canvas');
+      const ctx = hiddenCanvas.getContext('2d');
+      function isPixelTransparent(img, x, y) {
+        hiddenCanvas.width = img.naturalWidth;
+        hiddenCanvas.height = img.naturalHeight;
+        ctx.clearRect(0, 0, hiddenCanvas.width, hiddenCanvas.height);
+        ctx.drawImage(img, 0, 0);
+        const scaledX = Math.floor((x / img.clientWidth) * img.naturalWidth);
+        const scaledY = Math.floor((y / img.clientHeight) * img.naturalHeight);
+        const pixel = ctx.getImageData(scaledX, scaledY, 1, 1).data;
+        return pixel[3] === 0;
       }
-      
-      offsetX = e.clientX;
-      offsetY = e.clientY;
-      coordX = parseInt(container.style.left) || 0;
-      coordY = parseInt(container.style.top) || 0;
-      drag = container;
-      document.onmousemove = dragDiv;
-    }
     
-    function dragDiv(e) {
-      if (!drag) return;
-      if (!e) e = window.event;
-      drag.style.left = coordX + e.clientX - offsetX + "px";
-      drag.style.top = coordY + e.clientY - offsetY + "px";
-    }
+      function startDrag(e) {
+        if (!e) e = window.event;
+        if (e.preventDefault) e.preventDefault();
+        if (e.target.closest('.rotate-button')) return;
+        const targ = e.target.closest(".image-container");
+        if (!targ) return;
+        offsetX = e.clientX;
+        offsetY = e.clientY;
+        coordX = parseInt(targ.style.left) || 0;
+        coordY = parseInt(targ.style.top) || 0;
+        drag = targ;
+        document.addEventListener('mousemove', dragDiv);
+      }
     
-    function stopDrag() {
-      drag = false;
-    }
+      function dragDiv(e) {
+        if (!drag) return;
+        drag.style.left = coordX + e.clientX - offsetX + "px";
+        drag.style.top = coordY + e.clientY - offsetY + "px";
+      }
     
-    function rotateImage(e) {
-      e.stopPropagation();
-      const targ = e.target.closest(".image-container").querySelector(".dragme");
-      const rect = targ.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const calculateAngle = (mouseX, mouseY) => {
-        const dx = mouseX - centerX;
-        const dy = mouseY - centerY;
-        return Math.atan2(dy, dx) * (180 / Math.PI);
-      };
-      let initialAngle = calculateAngle(e.clientX, e.clientY);
-      let currentRotation = parseFloat(targ.dataset.rotation || 0);
-      const rotate = (event) => {
-        const newAngle = calculateAngle(event.clientX, event.clientY);
-        const deltaAngle = newAngle - initialAngle;
-        targ.style.transform = `rotate(${currentRotation + deltaAngle}deg)`;
-      };
-      const stopRotate = () => {
-        currentRotation = parseFloat(targ.style.transform.replace(/[^0-9\-.,]/g, "").split(",")[0]) || 0;
+      function stopDrag() {
+        drag = false;
+        document.removeEventListener('mousemove', dragDiv);
+      }
+    
+      function rotateImage(e) {
+        e.stopPropagation();
+        const targ = e.target.closest(".image-container").querySelector(".dragme");
+        let currentRotation = parseFloat(targ.dataset.rotation || 0);
+        const rotateStep = e.shiftKey ? -30 : 30;
+        currentRotation += rotateStep;
         targ.dataset.rotation = currentRotation;
-        document.removeEventListener("mousemove", rotate);
-        document.removeEventListener("mouseup", stopRotate);
-      };
-      document.addEventListener("mousemove", rotate);
-      document.addEventListener("mouseup", stopRotate);
-    }
+        targ.style.transform = `rotate(${currentRotation}deg)`;
+      }
     
-    window.onload = function () {
-      document.onmousedown = startDrag;
-      document.onmouseup = stopDrag;
-      
-      const rotateButtons = document.querySelectorAll(".rotate-button");
-      rotateButtons.forEach((btn) => {
-        btn.addEventListener("mousedown", rotateImage);
-      });
-      
-      // For each image, crop the transparent margins and adjust its display.
-      const images = document.querySelectorAll('.dragme');
-      images.forEach((img) => {
-        if (img.complete) {
-          cropImage(img);
-        } else {
-          img.onload = () => cropImage(img);
-        }
-      });
-    };
-  </script>  
+      window.onload = function () {
+        document.querySelectorAll('.image-container').forEach((container) => {
+          container.addEventListener('mousedown', startDrag);
+        });
+        document.addEventListener('mouseup', stopDrag);
+    
+        document.querySelectorAll(".rotate-button").forEach((btn) => {
+          btn.addEventListener("click", rotateImage);
+        });
+    
+        document.querySelectorAll('.dragme').forEach((img) => {
+          // Apply initial rotation
+          const initialRotation = parseFloat(img.dataset.rotation || 0);
+          img.style.transform = `rotate(${initialRotation}deg)`;
+          
+          if (img.complete) {
+            cropImage(img);
+          } else {
+            img.onload = () => {
+              cropImage(img);
+              // Reapply rotation after cropping in case it was lost
+              const rotation = parseFloat(img.dataset.rotation || 0);
+              img.style.transform = `rotate(${rotation}deg)`;
+            };
+          }
+        });
+      };
+    </script>  
+  </body>
 </html>
