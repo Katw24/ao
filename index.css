@@ -1,34 +1,39 @@
 .title {
   font-size: 1.5rem;
   text-align: center;
-  font-family: sans-serif
+  font-family: sans-serif;
 }
+
 body {
   font-family: Arial, sans-serif;
 }
+
 .container {
   position: relative;
   width: 100%;
   height: 600px;
-  display: flex; /* Enable flexbox */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  flex-wrap: wrap; /* Wrap images to prevent overlap */
-  gap: 20px; /* Add space between images */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
 }
+
 .image-container {
   position: absolute;
-  float: right
+  float: right;
 }
+
 .dragme {
   position: relative;
   display: block;
   cursor: grab;
   transform-origin: center;
   transition: transform 0.2s ease;
-  width: 100%; /* This will make the image stretch to the container's width */
+  width: 100%;
   height: auto;
 }
+
 .rotate-button {
   position: absolute;
   top: -15px;
@@ -39,7 +44,7 @@ body {
   width: 24px;
   height: 24px;
   cursor: pointer;
-  display: flex; /* Ensure it is always visible */
+  display: none; /* ✅ hidden by default */
   align-items: center;
   justify-content: center;
   font-size: 14px;
@@ -47,25 +52,31 @@ body {
   user-select: none;
   z-index: 10;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-}
-.image-container:hover .rotate-button {
-  display: flex; /* Show button on hover */
-}
-.linkContainer {
-  position: fixed;  /* Keeps it in place even when scrolling */
-  right: 10px;      /* Places it on the right side */
-  top: 50%;         /* Positions it in the vertical center */
-  transform: translateY(-50%); /* Centers it vertically */
-  padding: 0;       /* Remove unnecessary padding */
-  text-align: right; /* Ensures proper alignment */
-}
-.linkinicio {
-  display: flex; /* Use flexbox for centering */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-}
-.linkinicio img {
-  height: auto; /* Maintain aspect ratio */
-  display: block;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
+.image-container:hover .rotate-button {
+  display: flex;      /* ✅ shown on hover */
+  opacity: 1;         /* ✅ fade in */
+}
+
+.linkContainer {
+  position: fixed;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0;
+  text-align: right;
+}
+
+.linkinicio {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.linkinicio img {
+  height: auto;
+  display: block;
+}
