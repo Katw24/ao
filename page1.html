@@ -102,7 +102,7 @@
       img.style.left = -leftDisplay + "px";
       img.style.top = -topDisplay + "px";
     }
-  
+
     const hiddenCanvas = document.createElement('canvas');
     const ctx = hiddenCanvas.getContext('2d');
     function isPixelTransparent(img, x, y) {
@@ -145,7 +145,8 @@
       e.stopPropagation();
       const targ = e.target.closest(".image-container").querySelector(".dragme");
       let currentRotation = parseFloat(targ.dataset.rotation || 0);
-      currentRotation = (currentRotation + 30) % 360;
+      const rotateStep = e.shiftKey ? -30 : 30;
+      currentRotation += rotateStep;
       targ.dataset.rotation = currentRotation;
       targ.style.transform = `rotate(${currentRotation}deg)`;
     }
@@ -161,12 +162,22 @@
       });
   
       document.querySelectorAll('.dragme').forEach((img) => {
+        // Apply initial rotation
+        const initialRotation = parseFloat(img.dataset.rotation || 0);
+        img.style.transform = `rotate(${initialRotation}deg)`;
+        
         if (img.complete) {
           cropImage(img);
         } else {
-          img.onload = () => cropImage(img);
+          img.onload = () => {
+            cropImage(img);
+            // Reapply rotation after cropping in case it was lost
+            const rotation = parseFloat(img.dataset.rotation || 0);
+            img.style.transform = `rotate(${rotation}deg)`;
+          };
         }
       });
     };
-  </script>
+  </script>  
+</body>
 </html>
