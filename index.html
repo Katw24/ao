@@ -1,30 +1,52 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="index.css" />
-    <title>Teste Armar Objetos</title>
-    <imagetitle></imagetitle>
+<html lang="en">
     <style>
-      body {
-        background-color: #FFC784;
-        display: flex; /* Use flexbox for centering */
-        justify-content: center; /* Center horizontally */
-        align-items: center; /* Center vertically */
-         height: auto; /* Maintain aspect ratio */
-        display: block;
-      }
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url("./outros/fundoao.png");
+  background-size: cover;        /* Fully cover the screen */
+  background-position: center;   /* Center the image */
+  background-repeat: no-repeat;  /* No repeating */
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+      .top-left-box {
+  position: absolute;
+  left: 210px;
+  top: 15px;
+  padding: 10px;
+  text-align: center;
+  width: 500px;
+}
+
+.top-left-box img {
+  width: 500px !important;   /* Force image width */
+  height: auto !important;   /* Maintain aspect ratio */
+  max-width: 100%;           /* Prevent it from overflowing */
+  display: block;
+}
+
+.custom-button {
+  padding: 16px 1px;
+  background-color: #aaa7ad;
+  color: black;
+  text-decoration: none;
+  border-radius: 5px;
+  width: 200px;                /* 👈 Set your desired button width */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
     </style>
   </head>
   <body>
-    <h1 class="title">Arranjo de Figuras</h1>
-    <div class="linkContainer.inicio">
-      <a class="linkinicio" href="./ex.html">
-        <img
-          src="./outros/botao.png"
-          alt="próximo.inicio"
-          width="30%"
-        />
-      </a>
+    <div class="top-left-box">
+      <img src="./outros/letreiro.png" alt="Figura" />
+      <a href="./ex.html" class="custom-button">Iniciar</a>
     </div>
   </body>
 </html>
