@@ -1,52 +1,293 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armar Objetos</title>
     <style>
-body {
-  margin: 0;
-  padding: 0;
-  background-image: url("./outros/fundoao.png");
-  background-size: cover;        /* Fully cover the screen */
-  background-position: center;   /* Center the image */
-  background-repeat: no-repeat;  /* No repeating */
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-}
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #fffff0;
+            --bg-secondary: #babafff8d;
+            --text-primary: #f5f5f0;
+            --text-secondary: #000000;
+            --accent: #c4a98a;
+            --accent-hover: #d4b89a;
+        }
+        
+        body {
+            font-family: 'Playfair Display', serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
 
-      .top-left-box {
-  position: absolute;
-  left: 210px;
-  top: 15px;
-  padding: 10px;
-  text-align: center;
-  width: 500px;
-}
+        /* Quebra-cabeça ocupa a tela toda */
+        .puzzle-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            opacity: 0.6;
+        }
 
-.top-left-box img {
-  width: 500px !important;   /* Force image width */
-  height: auto !important;   /* Maintain aspect ratio */
-  max-width: 100%;           /* Prevent it from overflowing */
-  display: block;
-}
+        #puzzle-svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
 
-.custom-button {
-  padding: 16px 1px;
-  background-color: #aaa7ad;
-  color: black;
-  text-decoration: none;
-  border-radius: 5px;
-  width: 200px;                /* 👈 Set your desired button width */
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
+        /* Animação de queda */
+        @keyframes fall {
+            from {
+                opacity: 0;
+                transform: translateY(-60px) scale(0.88);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
 
+        .puzzle-piece {
+            opacity: 0;
+            animation: fall 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* Conteúdo principal */
+        .content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .title {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 400;
+            text-align: center;
+            letter-spacing: 0.02em;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeIn 1.2s ease 0.3s forwards;
+            text-shadow: 0 2px 24px rgba(0,0,0,0.18);
+        }
+        
+        /* Botão */
+        .cta-button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            color: black;
+            background: var(--accent);
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0;
+            animation: slideUp 1s ease 1.5s forwards;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border: 1px solid var(--accent);
+            border-radius: 2px;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.4s ease;
+        }
+        
+        .cta-button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+        
+        .cta-button:hover::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .cta-button:active {
+            transform: translateY(0);
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Partículas */
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 8s infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { opacity: 0; transform: translateY(100vh) scale(0); }
+            10%       { opacity: 0.3; }
+            90%       { opacity: 0.3; }
+            100%      { opacity: 0; transform: translateY(-100px) scale(1); }
+        }
     </style>
-  </head>
-  <body>
-    <div class="top-left-box">
-      <img src="./outros/letreiro.png" alt="Figura" />
-      <a href="./ex.html" class="custom-button">Iniciar</a>
+</head>
+<body>
+
+    <!-- Quebra-cabeça SVG fullscreen -->
+    <div class="puzzle-container">
+        <svg id="puzzle-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"></svg>
     </div>
-  </body>
+
+    <!-- Partículas sutis -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Conteúdo principal -->
+    <div class="content">
+        <h1 class="title">Armar Objetos</h1>
+        <a href="page1.html" class="cta-button">Começar</a>
+    </div>
+
+    <script>
+        // ── Configuração responsiva ─────────────────────────────
+        // Calcula colunas e linhas para cobrir a tela inteira
+        const VW = window.innerWidth;
+        const VH = window.innerHeight;
+
+        // Tamanho de cada peça em px (ajuste à gosto)
+        const PW = 110, PH = 100;
+        const R  = 13;   // raio do semicírculo
+
+        // Quantas peças cabem + 1 extra pra garantir cobertura total
+        const COLS = Math.ceil(VW / PW) + 1;
+        const ROWS = Math.ceil(VH / PH) + 1;
+
+        // Offset negativo para as peças começarem fora da borda
+        const OX = -((COLS * PW - VW) / 2);
+        const OY = -((ROWS * PH - VH) / 2);
+
+        const ns = 'http://www.w3.org/2000/svg';
+
+        const colors = [
+            '#5a5a6a', '#6a6060', '#5a6a6a', '#6a5a5a',
+            '#5a5a7a', '#5a6a5a', '#6a6065', '#5a6565',
+            '#65605a', '#605a6a', '#5a6060', '#6a5a6a',
+            '#5a6a60', '#6a605a', '#5a5a65', '#6a6a5a',
+            '#60655a', '#5a606a', '#655a60', '#6a5a65',
+            '#5a655a', '#65606a', '#606a55', '#5a6065',
+            '#6a5a70', '#5a6870', '#706050', '#5a7060'
+        ];
+
+        // ── Lógica de encaixe ───────────────────────────────────
+        function getH(r, c) { return ((r + c) % 2 === 0) ? 'knob' : 'hole'; }
+        function getV(r, c) { return ((r + c) % 2 === 0) ? 'knob' : 'hole'; }
+
+        function edgeSeg(x1, y1, x2, y2, type) {
+            if (type === 'flat') return `L${x2},${y2}`;
+            const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+            const dx = x2 - x1, dy = y2 - y1;
+            const len = Math.sqrt(dx * dx + dy * dy);
+            const ux = dx / len, uy = dy / len;
+            const ax = mx - ux * R, ay = my - uy * R;
+            const bx = mx + ux * R, by = my + uy * R;
+            const sweep = type === 'knob' ? 1 : 0;
+            return (
+                `L${ax.toFixed(2)},${ay.toFixed(2)} ` +
+                `A${R},${R} 0 0,${sweep} ${bx.toFixed(2)},${by.toFixed(2)} ` +
+                `L${x2.toFixed(2)},${y2.toFixed(2)}`
+            );
+        }
+
+        function makePath(r, c) {
+            const x  = OX + c * PW, y  = OY + r * PH;
+            const x2 = x + PW,      y2 = y + PH;
+
+            const topType   = (r === 0)        ? 'flat' : (getH(r-1, c) === 'knob' ? 'hole' : 'knob');
+            const rightType = (c === COLS - 1) ? 'flat' : getV(r, c);
+            const botType   = (r === ROWS - 1) ? 'flat' : getH(r, c);
+            const leftType  = (c === 0)        ? 'flat' : (getV(r, c-1) === 'knob' ? 'hole' : 'knob');
+
+            let d = `M${x},${y} `;
+            d += edgeSeg(x,  y,  x2, y,  topType)   + ' ';
+            d += edgeSeg(x2, y,  x2, y2, rightType) + ' ';
+            d += edgeSeg(x2, y2, x,  y2, botType)   + ' ';
+            d += edgeSeg(x,  y2, x,  y,  leftType)  + ' ';
+            d += 'Z';
+            return d;
+        }
+
+        // ── Construir SVG ───────────────────────────────────────
+        const svg = document.getElementById('puzzle-svg');
+        svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+
+        // Ordem de animação: embaralha levemente por diagonal
+        const allPieces = [];
+        for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+                allPieces.push({ r, c });
+            }
+        }
+
+        allPieces.forEach(({ r, c }) => {
+            const idx = r * COLS + c;
+            const path = document.createElementNS(ns, 'path');
+            path.setAttribute('d', makePath(r, c));
+            path.setAttribute('fill', colors[idx % colors.length]);
+            path.setAttribute('stroke', 'rgba(0,0,0,0.22)');
+            path.setAttribute('stroke-width', '1');
+            path.setAttribute('stroke-linejoin', 'round');
+            path.classList.add('puzzle-piece');
+            // delay por diagonal para efeito cascata natural
+            const delay = (c * 0.06 + r * 0.10);
+            path.style.animationDelay = delay + 's';
+            svg.appendChild(path);
+        });
+
+        // ── Partículas ──────────────────────────────────────────
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 16; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = `${Math.random() * 100}%`;
+            p.style.animationDelay = `${Math.random() * 8}s`;
+            p.style.animationDuration = `${6 + Math.random() * 4}s`;
+            particlesContainer.appendChild(p);
+        }
+    </script>
+</body>
 </html>
