@@ -1,182 +1,259 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="index.css" />
-    <title>Teste Armar Objetos</title>
-    <style>
-      body {
-        background-color: lightgrey;
-      }
-      .image-container {
-        position: absolute;
-        border: none;
-        padding: 5px;
-      }
-      .dragme {
-        display: block;
-        max-width: 100%;
-      }
-    </style>
-  </head>
-  <body>
-    <h1 class="title">Monte o quebra-cabeça</h1>
-    <div class="container">
-      <div class="image-container" style="top: 434px; left: 660px; width: 133px;">
-        <img src="./page5Images/borb1.png" alt="drag-and-drop image script" class="dragme" data-rotation="4"/>
-        <div class="rotate-button">↻</div>
-      </div>
-      <div class="image-container" style="top: 267px; left: 790px; width: 159px;">
-        <img src="./page5Images/borb2.png" alt="drag-and-drop image script" class="dragme" data-rotation="-3"/>
-        <div class="rotate-button">↻</div>
-      </div>
-      <div class="image-container" style="top: 254px; left: 453px; width: 250px;">
-        <img src="./page5Images/borb3.png" alt="drag-and-drop image script" class="dragme" data-rotation="15"/>
-        <div class="rotate-button">↻</div>
-      </div>
-      <div class="image-container" style="top: 115px; left: 752px; width: 250px;">
-        <img src="./page5Images/borb4.png" alt="drag-and-drop image script" class="dragme" data-rotation="-10"/>
-        <div class="rotate-button">↻</div>
-      </div>
-      <div class="image-container" style="top: 178px; left: 530px; width: 140px;">
-        <img src="./page5Images/borb5.png" alt="drag-and-drop image script" class="dragme" data-rotation="-11"/>
-        <div class="rotate-button">↻</div>
-      </div>
-      <div class="image-container" style="top: 40px; left: 780px; width: 150px;">
-        <img src="./page5Images/borb6.png" alt="drag-and-drop image script" class="dragme" data-rotation="-2"/>
-        <div class="rotate-button">↻</div>
-      </div>
-      <div class="image-container" style="top: 15px; left: 483px; width: 198px;">
-        <img src="./page5Images/borb7.png" alt="drag-and-drop image script" class="dragme" data-rotation="6"/>
-        <div class="rotate-button">↻</div>
-      </div>
-    </div>
-  </body>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Teste</title>
 
-  <script>
-    let drag = false;
-    let offsetX, offsetY, coordX, coordY;
-  
-    function cropImage(img) {
-      const natWidth = img.naturalWidth;
-      const natHeight = img.naturalHeight;
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = natWidth;
-      tempCanvas.height = natHeight;
-      const tempCtx = tempCanvas.getContext('2d');
-      tempCtx.drawImage(img, 0, 0);
-      const imageData = tempCtx.getImageData(0, 0, natWidth, natHeight);
-      const data = imageData.data;
-      let top = null, left = null, right = null, bottom = null;
-      for (let y = 0; y < natHeight; y++) {
-        for (let x = 0; x < natWidth; x++) {
-          const index = (y * natWidth + x) * 4;
-          if (data[index + 3] > 0) {
-            if (top === null) top = y;
-            if (left === null || x < left) left = x;
-            if (right === null || x > right) right = x;
-            bottom = y;
-          }
-        }
-      }
-      if (top === null) return;
-      const cropWidth = right - left + 1;
-      const cropHeight = bottom - top + 1;
-      const container = img.closest('.image-container');
-      const containerWidth = parseFloat(container.style.width);
-      const scale = containerWidth / natWidth;
-      const containerHeight = natHeight * scale;
-      container.style.height = containerHeight + "px";
-      const leftDisplay = left * scale;
-      const topDisplay = top * scale;
-      const coloredWidthDisplay = cropWidth * scale;
-      const croppedCanvas = document.createElement('canvas');
-      croppedCanvas.width = cropWidth;
-      croppedCanvas.height = cropHeight;
-      const croppedCtx = croppedCanvas.getContext('2d');
-      croppedCtx.drawImage(tempCanvas, left, top, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
-      img.src = croppedCanvas.toDataURL();
-      img.style.width = coloredWidthDisplay + "px";
-      img.style.height = "auto";
-      img.style.position = "relative";
-      img.style.left = -leftDisplay + "px";
-      img.style.top = -topDisplay + "px";
+<style>
+body {
+  margin: 0;
+  background: #e9e6df;
+  font-family: sans-serif;
+}
+
+/* TIMER */
+.timer {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  font-size: 14px;
+  color: rgba(0,0,0,0.6);
+}
+
+/* PEÇA */
+.image-container {
+  position: absolute;
+  cursor: grab;
+}
+
+.image-container:active {
+  cursor: grabbing;
+}
+
+/* WRAPPER */
+.piece {
+  display: inline-block;
+  transform-origin: center center;
+}
+
+/* IMAGEM */
+.dragme {
+  display: block;
+  pointer-events: none;
+}
+
+/* ROTATE */
+.rotate-button {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border-radius: 50%;
+  padding: 3px 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/* 🔥 TUTORIAL VISUAL */
+.tutorial {
+  position: fixed;
+  bottom: 15px;
+  left: 20px;
+  font-size: 12px;
+  color: rgba(0,0,0,0.5);
+  line-height: 1.6;
+  pointer-events: none;
+  user-select: none;
+  background: rgba(255,255,255,0.4);
+  padding: 8px 10px;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.5s ease;
+  transition: opacity 0.5s ease;
+}
+
+.tutorial div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.key {
+  background: rgba(0,0,0,0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* animação */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- TIMER -->
+<div class="timer" id="timer">00:00</div>
+
+<!-- PEÇAS -->
+<div class="image-container" style="top:434px; left:660px;">
+  <div class="piece">
+    <img src="./page5Images/borb1.png" class="dragme" style="width:140px;">
+  </div>
+  <div class="rotate-button">↻</div>
+</div>
+
+<div class="image-container" style="top:267px; left:790px;">
+  <div class="piece">
+    <img src="./page5Images/borb2.png" class="dragme" style="width:160px;">
+  </div>
+  <div class="rotate-button">↻</div>
+</div>
+
+<div class="image-container" style="top:254px; left:453px;">
+  <div class="piece">
+    <img src="./page5Images/borb3.png" class="dragme" style="width:250px;">
+  </div>
+  <div class="rotate-button">↻</div>
+</div>
+
+<div class="image-container" style="top:115px; left:752px;">
+  <div class="piece">
+    <img src="./page5Images/borb4.png" class="dragme" style="width:250px;">
+  </div>
+  <div class="rotate-button">↻</div>
+</div>
+
+<div class="image-container" style="top:178px; left:530px;">
+  <div class="piece">
+    <img src="./page5Images/borb5.png" class="dragme" style="width:140px;">
+  </div>
+  <div class="rotate-button">↻</div>
+</div>
+
+<div class="image-container" style="top:40px; left:780px;">
+  <div class="piece">
+    <img src="./page5Images/borb6.png" class="dragme" style="width:150px;">
+  </div>
+  <div class="rotate-button">↻</div>
+</div>
+
+<div class="image-container" style="top:15px; left:483px;">
+  <div class="piece">
+    <img src="./page5Images/borb7.png" class="dragme" style="width:200px;">
+  </div>
+  <div class="rotate-button">↻</div>
+</div>
+
+<!-- 🔥 TUTORIAL -->
+<div class="tutorial" id="tutorial">
+  <div>🖱️ Arraste para mover</div>
+  <div>↻ Clique para girar</div>
+  <div><span class="key">Shift</span> + clique ↺ gira ao contrário</div>
+</div>
+
+<script>
+/* TIMER */
+let startTime=null, timerStarted=false;
+
+function startTimer(){
+  if(!timerStarted){
+    startTime = Date.now();
+    timerStarted = true;
+  }
+}
+
+setInterval(()=>{
+  if(!timerStarted) return;
+
+  const t = Date.now()-startTime;
+  const s = Math.floor(t/1000);
+
+  document.getElementById("timer").innerText =
+    `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+},1000);
+
+/* DRAG */
+let active=null, shiftX=0, shiftY=0;
+
+document.querySelectorAll('.image-container').forEach(el=>{
+  el.addEventListener('mousedown', e=>{
+    if(e.target.closest('.rotate-button')) return;
+
+    active = el;
+
+    const rect = el.getBoundingClientRect();
+
+    shiftX = e.clientX - rect.left;
+    shiftY = e.clientY - rect.top;
+
+    startTimer();
+
+    document.addEventListener('mousemove', move);
+  });
+});
+
+function move(e){
+  if(!active) return;
+
+  active.style.left = (e.clientX - shiftX) + 'px';
+  active.style.top  = (e.clientY - shiftY) + 'px';
+}
+
+document.addEventListener('mouseup', ()=>{
+  active=null;
+  document.removeEventListener('mousemove', move);
+});
+
+/* ROTAÇÃO */
+document.querySelectorAll('.rotate-button').forEach(btn=>{
+  btn.addEventListener('click', e=>{
+    e.stopPropagation();
+
+    const piece = e.target.closest('.image-container').querySelector('.piece');
+
+    let r = parseFloat(piece.dataset.r || 0);
+
+    if (e.shiftKey) {
+      r -= 15;
+    } else {
+      r += 15;
     }
 
-    const hiddenCanvas = document.createElement('canvas');
-    const ctx = hiddenCanvas.getContext('2d');
-    function isPixelTransparent(img, x, y) {
-      hiddenCanvas.width = img.naturalWidth;
-      hiddenCanvas.height = img.naturalHeight;
-      ctx.clearRect(0, 0, hiddenCanvas.width, hiddenCanvas.height);
-      ctx.drawImage(img, 0, 0);
-      const scaledX = Math.floor((x / img.clientWidth) * img.naturalWidth);
-      const scaledY = Math.floor((y / img.clientHeight) * img.naturalHeight);
-      const pixel = ctx.getImageData(scaledX, scaledY, 1, 1).data;
-      return pixel[3] === 0;
-    }
-  
-    function startDrag(e) {
-      if (!e) e = window.event;
-      if (e.preventDefault) e.preventDefault();
-      if (e.target.closest('.rotate-button')) return;
-      const targ = e.target.closest(".image-container");
-      if (!targ) return;
-      offsetX = e.clientX;
-      offsetY = e.clientY;
-      coordX = parseInt(targ.style.left) || 0;
-      coordY = parseInt(targ.style.top) || 0;
-      drag = targ;
-      document.addEventListener('mousemove', dragDiv);
-    }
-  
-    function dragDiv(e) {
-      if (!drag) return;
-      drag.style.left = coordX + e.clientX - offsetX + "px";
-      drag.style.top = coordY + e.clientY - offsetY + "px";
-    }
-  
-    function stopDrag() {
-      drag = false;
-      document.removeEventListener('mousemove', dragDiv);
-    }
-  
-    function rotateImage(e) {
-      e.stopPropagation();
-      const targ = e.target.closest(".image-container").querySelector(".dragme");
-      let currentRotation = parseFloat(targ.dataset.rotation || 0);
-      const rotateStep = e.shiftKey ? -30 : 30;
-      currentRotation += rotateStep;
-      targ.dataset.rotation = currentRotation;
-      targ.style.transform = `rotate(${currentRotation}deg)`;
-    }
-  
-    window.onload = function () {
-      document.querySelectorAll('.image-container').forEach((container) => {
-        container.addEventListener('mousedown', startDrag);
-      });
-      document.addEventListener('mouseup', stopDrag);
-  
-      document.querySelectorAll(".rotate-button").forEach((btn) => {
-        btn.addEventListener("click", rotateImage);
-      });
-  
-      document.querySelectorAll('.dragme').forEach((img) => {
-        // Apply initial rotation
-        const initialRotation = parseFloat(img.dataset.rotation || 0);
-        img.style.transform = `rotate(${initialRotation}deg)`;
-        
-        if (img.complete) {
-          cropImage(img);
-        } else {
-          img.onload = () => {
-            cropImage(img);
-            // Reapply rotation after cropping in case it was lost
-            const rotation = parseFloat(img.dataset.rotation || 0);
-            img.style.transform = `rotate(${rotation}deg)`;
-          };
-        }
-      });
-    };
-  </script>  
+    piece.dataset.r = r;
+    piece.style.transform = `rotate(${r}deg)`;
+
+    startTimer();
+  });
+});
+
+/* ÍCONE MUDA COM SHIFT */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Shift') {
+    document.querySelectorAll('.rotate-button').forEach(btn => {
+      btn.textContent = '↺';
+    });
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'Shift') {
+    document.querySelectorAll('.rotate-button').forEach(btn => {
+      btn.textContent = '↻';
+    });
+  }
+});
+
+/* TUTORIAL SOME SUAVEMENTE */
+setTimeout(() => {
+  const t = document.getElementById("tutorial");
+  if (t) t.style.opacity = "0.2";
+}, 5000);
+</script>
+
 </body>
 </html>
