@@ -2,8 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Teste Armar Objetos</title>
+<title>Teste</title>
 
 <style>
 body {
@@ -116,37 +115,48 @@ body {
 
 <div class="timer" id="timer">00:00</div>
 
-<!-- PEÇAS -->
-<div class="image-container" style="top:151px; left:985px;" data-width="234">
-  <div class="piece"></div>
-  <img src="./page3Images/fante1.png" class="dragme" data-rotation="0" style="width: 234px;">
+<div class="image-container" style="top:151px; left:985px;">
+  <div class="piece" data-rotation="0">
+    <img src="./page3Images/fante1.png" class="dragme" style="width:234px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
-<div class="image-container" style="top:55px; left:922px;" data-width="90">
-  <img src="./page3Images/fante2.png" class="dragme" data-rotation="2" style="width: 90px;">
+<div class="image-container" style="top:55px; left:922px;">
+  <div class="piece" data-rotation="2">
+    <img src="./page3Images/fante2.png" class="dragme" style="width:90px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
-<div class="image-container" style="top:104px; left:752px;" data-width="172">
-  <img src="./page3Images/fante3.png" class="dragme" data-rotation="0" style="width: 172px;">
+<div class="image-container" style="top:104px; left:752px;">
+  <div class="piece" data-rotation="0">
+    <img src="./page3Images/fante3.png" class="dragme" style="width:172px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
-<div class="image-container" style="top:118px; left:585px;" data-width="147">
-  <img src="./page3Images/fante4.png" class="dragme" data-rotation="0" style="width: 147px;">
+<div class="image-container" style="top:118px; left:585px;">
+  <div class="piece" data-rotation="0">
+    <img src="./page3Images/fante4.png" class="dragme" style="width:147px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
-<div class="image-container" style="top:77px; left:423px;" data-width="140">
-  <img src="./page3Images/fante5.png" class="dragme" data-rotation="0" style="width: 140px;">
+<div class="image-container" style="top:77px; left:423px;">
+  <div class="piece" data-rotation="0">
+    <img src="./page3Images/fante5.png" class="dragme" style="width:140px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
-<div class="image-container" style="top:48px; left:198px;" data-width="180">
-  <img src="./page3Images/fante6.png" class="dragme" data-rotation="0" style="width: 180px;">
+<div class="image-container" style="top:48px; left:198px;">
+  <div class="piece" data-rotation="0">
+    <img src="./page3Images/fante6.png" class="dragme" style="width:180px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
+
 
 <!-- 🔥 TUTORIAL -->
 <div class="tutorial" id="tutorial">
@@ -159,6 +169,14 @@ body {
 <button class="next-btn" onclick="nextPage()">Continuar</button>
 
 <script>
+
+/* ROTAÇÃO INICIAL */
+document.querySelectorAll('.piece').forEach(piece => {
+  const initial = parseFloat(piece.dataset.rotation || 0);
+  piece.dataset.r = initial;
+  piece.style.transform = `rotate(${initial}deg)`;
+});
+
 /* TIMER */
 let startTime=null, timerStarted=false;
 
@@ -250,15 +268,16 @@ document.addEventListener('keyup', (e) => {
   }
 });
 
-function nextPage() {
-  window.location.href = "page4.html";
-}
-
 /* TUTORIAL SOME SUAVEMENTE */
 setTimeout(() => {
   const t = document.getElementById("tutorial");
   if (t) t.style.opacity = "0.2";
 }, 5000);
+
+function nextPage() {
+  window.location.href = "page4.html";
+}
+
 </script>
 
 </body>

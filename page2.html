@@ -122,8 +122,8 @@ body {
 </div>
 
 <div class="image-container" style="top:8px; left:923px;">
-  <div class="piece">
-    <img src="./page2Images/cab2.png" class="dragme" style="width:83px;" data-rotation="-1">
+  <div class="piece" data-rotation="-0.5">
+    <img src="./page2Images/cab2.png" class="dragme" style="width:83px;" >
   </div>
   <div class="rotate-button">↻</div>
 </div>
@@ -135,30 +135,30 @@ body {
   <div class="rotate-button">↻</div>
 </div>
 
-<div class="image-container" style="top:27px; left:756px;">
-  <div class="piece">
-    <img src="./page2Images/cab4.png" class="dragme" style="width:97px;" data-rotation="-7">
+<div class="image-container" style="top:27px; left:756px;" >
+  <div class="piece" data-rotation="-7">
+    <img src="./page2Images/cab4.png" class="dragme" style="width:97px;" >
   </div>
   <div class="rotate-button">↻</div>
 </div>
 
 <div class="image-container" style="top:44px; left:684px;">
-  <div class="piece">
-    <img src="./page2Images/cab5.png" class="dragme" style="width:64px;" data-rotation="-1">
+  <div class="piece" data-rotation="-1">
+    <img src="./page2Images/cab5.png" class="dragme" style="width:65.25px;" >
   </div>
   <div class="rotate-button">↻</div>
 </div>
 
-<div class="image-container" style="top:24px; left:593px;">
-  <div class="piece">
-    <img src="./page2Images/cab6.png" class="dragme" style="width:81px;" data-rotation="43">
+<div class="image-container" style="top:24px; left:593px;" >
+  <div class="piece" data-rotation="43">
+    <img src="./page2Images/cab6.png" class="dragme" style="width:80.25px;">
   </div>
   <div class="rotate-button">↻</div>
 </div>
 
 <div class="image-container" style="top:35px; left:492px;">
-  <div class="piece">
-    <img src="./page2Images/cab7.png" class="dragme" style="width:61px;">
+  <div class="piece" data-rotation="0">
+    <img src="./page2Images/cab7.png" class="dragme" style="width:59.75px;">
   </div>
   <div class="rotate-button">↻</div>
 </div>
@@ -175,6 +175,14 @@ body {
 <button class="next-btn" onclick="nextPage()">Continuar</button>
 
 <script>
+
+/* ROTAÇÃO INICIAL */
+document.querySelectorAll('.piece').forEach(piece => {
+  const initial = parseFloat(piece.dataset.rotation || 0);
+  piece.dataset.r = initial;
+  piece.style.transform = `rotate(${initial}deg)`;
+});
+
 /* TIMER */
 let startTime=null, timerStarted=false;
 

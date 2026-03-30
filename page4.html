@@ -118,56 +118,65 @@ body {
 
 <!-- PEÇAS -->
 <div class="image-container" style="top:259px; left:1006px;">
-  <div class="piece"></div>
-  <img src="./page4Images/casa1.png" class="dragme" data-rotation="0" style="width: 70px;">
+  <div class="piece">
+  <img src="./page4Images/casa1.png" class="dragme" style="width: 70px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
 <div class="image-container" style="top:497px; left:821px;">
-  <div class="piece"></div>
-  <img src="./page4Images/casa2.png" class="dragme" data-rotation="0" style="width: 111px;">
+  <div class="piece">
+  <img src="./page4Images/casa2.png" class="dragme" style="width: 111px;">
+</div>
   <div class="rotate-button">↻</div>
 </div>
 
 <div class="image-container" style="top:525px; left:424px;">
-  <div class="piece"></div>
-  <img src="./page4Images/casa3.png" class="dragme" data-rotation="-3" style="width: 319px;">
+  <div class="piece" data-rotation="-3">
+  <img src="./page4Images/casa3.png" class="dragme" style="width: 319px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
 <div class="image-container" style="top:375px; left:455px;">
-  <div class="piece"></div>
-  <img src="./page4Images/casa4.png" class="dragme" data-rotation="0" style="width: 252px;">
+  <div class="piece">
+  <img src="./page4Images/casa4.png" class="dragme" style="width: 252px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
 <div class="image-container" style="top:-22px; left:971px;">
-  <div class="piece"></div>
-  <img src="./page4Images/casa5.png" class="dragme" data-rotation="0" style="width: 151px;">
+  <div class="piece">
+  <img src="./page4Images/casa5.png" class="dragme" style="width: 151px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
 <div class="image-container" style="top:183px; left:802px;">
-  <div class="piece"></div>
-  <img src="./page4Images/casa6.png" class="dragme" data-rotation="0" style="width: 135px;">
+  <div class="piece">
+  <img src="./page4Images/casa6.png" class="dragme" style="width: 135px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
 <div class="image-container" style="top:235px; left:563px;">
-  <div class="piece"></div>
-  <img src="./page4Images/casa7.png" class="dragme" data-rotation="0" style="width: 192px;">
+  <div class="piece">
+  <img src="./page4Images/casa7.png" class="dragme" style="width: 192px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
 <div class="image-container" style="top:109px; left:298px;">
-  <div class="piece"></div>
-  <img src="./page4Images/casa8.png" class="dragme" data-rotation="0" style="width: 133px;">
+  <div class="piece">
+  <img src="./page4Images/casa8.png" class="dragme" style="width: 133px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
 <div class="image-container" style="top:-24px; left:530px;">
-  <div class="piece"></div>
-  <img src="./page4Images/casa9.png" class="dragme" data-rotation="0" style="width: 257px;">
+  <div class="piece">
+  <img src="./page4Images/casa9.png" class="dragme" style="width: 257px;">
+  </div>
   <div class="rotate-button">↻</div>
 </div>
 
@@ -182,6 +191,14 @@ body {
 <button class="next-btn" onclick="nextPage()">Continuar</button>
 
 <script>
+
+/* ROTAÇÃO INICIAL */
+document.querySelectorAll('.piece').forEach(piece => {
+  const initial = parseFloat(piece.dataset.rotation || 0);
+  piece.dataset.r = initial;
+  piece.style.transform = `rotate(${initial}deg)`;
+});
+
 /* TIMER */
 let startTime=null, timerStarted=false;
 
